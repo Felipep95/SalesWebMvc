@@ -1,4 +1,4 @@
-﻿@model IEnumerable<SalesWebMvc.Models.Seller>
+﻿@model IEnumerable<SalesWebMvc.Models.Seller> 
 
 @{
     ViewData["Title"] = "Sellers";
@@ -7,6 +7,10 @@
 <h2>@ViewData["Title"]</h2>
 
 @*To use C# code inside html, need to put a caractere @ before the code.*@
+
+<p>
+    <a asp-action="Create" class="btn btn-default">Create New</a>
+</p>
 
 <table class="table table-striped table-hover">
     <thead>
