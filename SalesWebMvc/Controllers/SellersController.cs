@@ -37,6 +37,7 @@ namespace SalesWebMvc.Controllers
             return Redirect(nameof(Index));
         }
 
+        // This action show a message box to confirm if user want to delete data.
         public IActionResult Delete(int? id)
         {
             if (id == null)
@@ -45,7 +46,7 @@ namespace SalesWebMvc.Controllers
             }
 
             var obj = _sellerService.FindById(id.Value);
-            
+
             if (obj == null)
             {
                 return NotFound();
@@ -54,12 +55,30 @@ namespace SalesWebMvc.Controllers
             return View(obj);
         }
 
+        // This action delete data from database.
         [HttpPost]
         [ValidateAntiForgeryToken]
         public IActionResult Delete(int id)
         {
             _sellerService.Remove(id);
             return RedirectToAction(nameof(Index));
+        }
+
+        public IActionResult Details(int? id)
+        {
+            if (id == null)
+            {
+                return NotFound();
+            }
+
+            var obj = _sellerService.FindById(id.Value);
+
+            if (obj == null)
+            {
+                return NotFound();
+            }
+
+            return View(obj);
         }
     }
 }
