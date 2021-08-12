@@ -27,17 +27,18 @@ namespace SalesWebMvc.Controllers
             var list = await _sellerService.FindAllAsync();
             return View(list);
         }
-
-        public async Task<IActionResult> Create()
+        // Navigate to create page... return a view with fields to insert data to save on database.
+        public async Task<IActionResult> Create()//get date to show on view
         {
-            var departments = await _departmentService.FindAllAsync();
-            var viewModel = new SellerFormViewModel { Departments = departments };
+            var departments = await _departmentService.FindAllAsync();//load list of departments
+            var viewModel = new SellerFormViewModel { Departments = departments };//set list of departments on comboBox
             return View(viewModel);
         }
 
+        // Create a new seller on database (asp-action="Create" on View Sellers -> Create)
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create(Seller seller)
+        public async Task<IActionResult> Create(Seller seller)// save data on database
         {
             if (!ModelState.IsValid)
             {
@@ -58,7 +59,7 @@ namespace SalesWebMvc.Controllers
                 return RedirectToAction(nameof(Error), new { message = "Id not provided" });
             }
 
-            var obj = await _sellerService.FindByIdAsync(id.Value);
+            var obj = await _sellerService.FindByIdAsync(id.Value); //when value is optional, then use .value (in this case, id(int?))
 
             if (obj == null)
             {
@@ -73,8 +74,15 @@ namespace SalesWebMvc.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Delete(int id)
         {
-            await _sellerService.RemoveAsync(id);
-            return RedirectToAction(nameof(Index));
+            try
+            {
+                await _sellerService.RemoveAsync(id);
+                return RedirectToAction(nameof(Index));
+            }
+            catch (IntegrityException e)
+            {
+                return RedirectToAction(nameof(Error), new { message = e.Message });
+            }
         }
 
         public async Task<IActionResult> Details(int? id)
@@ -102,6 +110,7 @@ namespace SalesWebMvc.Controllers
             }
 
             var obj = await _sellerService.FindByIdAsync(id.Value);
+            
             if (obj == null)
             {
                 return RedirectToAction(nameof(Error), new { message = "Id not found" }); ;
@@ -145,10 +154,10 @@ namespace SalesWebMvc.Controllers
             var viewModel = new ErrorViewModel
             {
                 Message = message,
-                RequestId = Activity.Current?.Id ?? HttpContext.TraceIdentifier //take a intern id of requisition.
+                RequestId = Activity.Current?.Id ?? HttpContext.TraceIdentifier //get a intern id of requisition.
             };
 
-            return View(viewModel); //continuar no min 4:54
+            return View(viewModel);
         }
     }
 }
